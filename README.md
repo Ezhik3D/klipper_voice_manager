@@ -13,10 +13,14 @@ Klipper — очень мощная и развитая система, можн
 
 Тогда ребята указали мне в сторону нейросетей. К сегодняшнему дню они очень шагнули вперёд, но есть нюансы: вечный Альцгеймер, навязчивая попытка тихо «исправить» то, что не просишь, ломая одно при правке другого, ограничения по объёму кода и т.д. За месяц работы с ними я научился с этим бороться, за второй месяц проект пережил десять или более переписываний почти с нуля. В итоге проект заработал как надо, ещё полмесяца ушло на его использование «в хвост и в гриву», отлавливание и исправление багов.
 
-В итоге проект готов. Дарю его всем, кому он нужен. Если будут желающие его развивать и выложить на GitHub — буду только рад. Единственное требование: укажите мою скромную персону как прародителя этого проекта.  
+В итоге проект готов. Дарю его всем, кому он нужен.  
 С уважением, ваш Йожик.
 
 ---
+
+## Внимание! Прежде чем менять что-то в config.yaml создайте его резервную копию.
+## Рекомендуется открывать его в notepad++ через WinSCP 
+## В config.yaml проверяйте синтаксис (отступы, двоеточия, кавычки).
 
 ## Работа с системой озвучки: настройки и важные пояснения
 
@@ -255,10 +259,12 @@ filament_diameter: 1.75  # Диаметр филамента в мм
 time_pattern:
   # Основное регулярное выражение (латиница: d/h/m/s)
   # Находит блоки вида XdXhXmXs в любом месте имени файла
-  regex: '(?:\\d+d)?(?:\\d+h)?(?:\\d+m)?(?:\\d+s)+'
+  regex: '(?:\d+d)?(?:\d+h)?(?:\d+m)?(?:\d+s)+'
   examples:
+    - "file_1d2h30m.txt"
     - "project_2h45m.zip"
     - "backup_15m.7z"
+    - "log_45s.log"
     - "data_1d2h.csv"
     - "report_3h45m10s.pdf"
 ```
@@ -381,30 +387,33 @@ response:
 
 ```ini
 [gcode_macro G28]
-# rename_existing: G28.1  # добавить при необходимости
+rename_existing: G28.1
 gcode:
-  {% if params.X is defined and params.Y is undefined and params.Z is undefined %}
-    M118 G28 X START
-    G28.1 X
-    M118 G28 X END
-  {% elif params.X is undefined and params.Y is defined and params.Z is undefined %}
-    M118 G28 Y START
-    G28.1 Y
-    M118 G28 Y END
-  {% elif params.X is undefined and params.Y is undefined and params.Z is defined %}
-    G28.1 ZА
-    M118 G28 Z END
-  {% elif params.X is defined and params.Y is defined and params.Z is undefined %}
-    M118 G28 X START
-    G28.1 X
-    M118 G28 X END
-    M118 G28 Y START
-    G28.1 Y
-    M118 G28 Y END
-  {% elif (params.X is defined and params.Y is defined and params.Z is defined) or (params.X is undefined and params.Y is undefined and params.Z is undefined) %}
-    M118 G28 START
-    G28.1
-  {% endif %}
+    {% if params.X is defined and params.Y is undefined and params.Z is undefined %}
+        M118 G28 X START
+        G28.1 X
+        M118 G28 X END
+    {% elif params.X is undefined and params.Y is defined and params.Z is undefined %}
+        M118 G28 Y START
+        G28.1 Y
+        M118 G28 Y END
+    {% elif params.X is undefined and params.Y is undefined and params.Z is defined %}
+        M118 G28 Z START
+        G28.1 ZА
+        M118 G28 Z END
+    {% elif params.X is defined and params.Y is defined and params.Z is undefined %}
+        M118 G28 X START
+        G28.1 X
+        M118 G28 X END
+        M118 G28 Y START
+        G28.1 Y
+        M118 G28 Y END
+    {% elif (params.X is defined and params.Y is defined and params.Z is defined) or (params.X is undefined and params.Y is undefined and params.Z is undefined)  %}
+        M118 G28 START
+        G28.1
+        M118 G28 END
+    {% endif %}
+
 ```
 
 Как видите, обычные `M118` работают как **маркер** на срабатывание того или иного оповещения.
@@ -413,17 +422,17 @@ gcode:
 [gcode_macro BED_MESH_CALIBRATE]
 rename_existing: BASE_BED_MESH_CALIBRATE
 gcode:
-  {% if params.ADAPTIVE is defined %}
-    M118 BED_MESH_ADAPTIVE START
-    G4 P1000
-    BASE_BED_MESH_CALIBRATE ADAPTIVE=1
-    M118 BED_MESH_ADAPTIVE END
-  {% else %}
-    M118 BED_MESH START
-    G4 P1000
-    BASE_BED_MESH_CALIBRATE
-    M118 BED_MESH END
-  {% endif %}
+    {% if params.ADAPTIVE is defined %}
+      M118 BED_MESH_ADAPTIVE START
+      G4 P1000
+      BASE_BED_MESH_CALIBRATE ADAPTIVE=1
+      M118 BED_MESH_ADAPTIVE END
+    {% else %}
+      M118 BED_MESH START
+      G4 P1000
+      BASE_BED_MESH_CALIBRATE
+      M118 BED_MESH END
+    {% endif %}
 ```
 
 Тут тоже всё просто.
@@ -625,7 +634,49 @@ python3 main.py
 
 Система склонений работает **автоматом**, так что базовая конфигурация уже рассчитана на естественную речь.
 
----
-
-Вроде всё описано, что хотелось. Если что-то упущено — не пинайте строго.
 # klipper_voice_manager
+
+Установка:
+Скачайте проект
+
+```bash
+git clone https://github.com/Ezhik3D/klipper_voice_manager.git
+```
+
+Перейдите в папку:
+```bash
+cd klipper_voice_manager
+```
+
+Полная установка:
+
+```bash
+bash install.sh
+```
+
+введите пароль для sudo по запросу, далее при запуске делайте это если нужно.
+
+Установка только зависимостей:
+
+```bash
+bash install.sh --deps-only
+```
+
+Установка только сервиса:
+
+```bash
+bash install.sh --service-only
+```
+
+Удаление:
+```bash
+bash uninstall.sh
+```
+
+Рекомендация по первому запуску, сначала перейдите в папку с фалами, сделайте исполняемым скрипт install.sh, затем установите только зависимости. И запустите скрипт для проверки без запуска сервиса командой:
+
+```bash
+python3 main.py
+```
+
+Убедившись что нет ошибок и его работаспособности, можете выйти из выполнения по комбинации клавиш Ctrl+C. Затем запустите только установку сервиса. В будующем используйте это если будете переделывать озвучку, вывод вам всегда покажет ошибки и лишние файлы в папке со звуками.
