@@ -91,9 +91,10 @@ install_dependencies() {
 }
 
 setup_service() {
-    PROJECT_DIR="$(pwd)"
-    MAIN_SCRIPT="$(dirname "$0")klipper_voice_manager/klipper_voice_manager/main.py"
-
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    PROJECT_DIR="$SCRIPT_DIR/klipper_voice_manager"
+    MAIN_SCRIPT="$PROJECT_DIR/main.py"
+    
     if [ ! -f "$MAIN_SCRIPT" ]; then
         echo "Ошибка: не найден $MAIN_SCRIPT"
         exit 1
