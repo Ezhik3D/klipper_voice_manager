@@ -259,10 +259,12 @@ filament_diameter: 1.75  # Диаметр филамента в мм
 time_pattern:
   # Основное регулярное выражение (латиница: d/h/m/s)
   # Находит блоки вида XdXhXmXs в любом месте имени файла
-  regex: '(?:\\d+d)?(?:\\d+h)?(?:\\d+m)?(?:\\d+s)+'
+  regex: '(?:\d+d)?(?:\d+h)?(?:\d+m)?(?:\d+s)+'
   examples:
+    - "file_1d2h30m.txt"
     - "project_2h45m.zip"
     - "backup_15m.7z"
+    - "log_45s.log"
     - "data_1d2h.csv"
     - "report_3h45m10s.pdf"
 ```
@@ -385,30 +387,33 @@ response:
 
 ```ini
 [gcode_macro G28]
-rename_existing: G28.1  # добавить при необходимости
+rename_existing: G28.1
 gcode:
-  {% if params.X is defined and params.Y is undefined and params.Z is undefined %}
-    M118 G28 X START
-    G28.1 X
-    M118 G28 X END
-  {% elif params.X is undefined and params.Y is defined and params.Z is undefined %}
-    M118 G28 Y START
-    G28.1 Y
-    M118 G28 Y END
-  {% elif params.X is undefined and params.Y is undefined and params.Z is defined %}
-    G28.1 ZА
-    M118 G28 Z END
-  {% elif params.X is defined and params.Y is defined and params.Z is undefined %}
-    M118 G28 X START
-    G28.1 X
-    M118 G28 X END
-    M118 G28 Y START
-    G28.1 Y
-    M118 G28 Y END
-  {% elif (params.X is defined and params.Y is defined and params.Z is defined) or (params.X is undefined and params.Y is undefined and params.Z is undefined) %}
-    M118 G28 START
-    G28.1
-  {% endif %}
+    {% if params.X is defined and params.Y is undefined and params.Z is undefined %}
+        M118 G28 X START
+        G28.1 X
+        M118 G28 X END
+    {% elif params.X is undefined and params.Y is defined and params.Z is undefined %}
+        M118 G28 Y START
+        G28.1 Y
+        M118 G28 Y END
+    {% elif params.X is undefined and params.Y is undefined and params.Z is defined %}
+        M118 G28 Z START
+        G28.1 ZА
+        M118 G28 Z END
+    {% elif params.X is defined and params.Y is defined and params.Z is undefined %}
+        M118 G28 X START
+        G28.1 X
+        M118 G28 X END
+        M118 G28 Y START
+        G28.1 Y
+        M118 G28 Y END
+    {% elif (params.X is defined and params.Y is defined and params.Z is defined) or (params.X is undefined and params.Y is undefined and params.Z is undefined)  %}
+        M118 G28 START
+        G28.1
+        M118 G28 END
+    {% endif %}
+
 ```
 
 Как видите, обычные `M118` работают как **маркер** на срабатывание того или иного оповещения.
@@ -417,17 +422,17 @@ gcode:
 [gcode_macro BED_MESH_CALIBRATE]
 rename_existing: BASE_BED_MESH_CALIBRATE
 gcode:
-  {% if params.ADAPTIVE is defined %}
-    M118 BED_MESH_ADAPTIVE START
-    G4 P1000
-    BASE_BED_MESH_CALIBRATE ADAPTIVE=1
-    M118 BED_MESH_ADAPTIVE END
-  {% else %}
-    M118 BED_MESH START
-    G4 P1000
-    BASE_BED_MESH_CALIBRATE
-    M118 BED_MESH END
-  {% endif %}
+    {% if params.ADAPTIVE is defined %}
+      M118 BED_MESH_ADAPTIVE START
+      G4 P1000
+      BASE_BED_MESH_CALIBRATE ADAPTIVE=1
+      M118 BED_MESH_ADAPTIVE END
+    {% else %}
+      M118 BED_MESH START
+      G4 P1000
+      BASE_BED_MESH_CALIBRATE
+      M118 BED_MESH END
+    {% endif %}
 ```
 
 Тут тоже всё просто.
