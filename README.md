@@ -385,7 +385,7 @@ response:
 
 ```ini
 [gcode_macro G28]
-# rename_existing: G28.1  # добавить при необходимости
+rename_existing: G28.1  # добавить при необходимости
 gcode:
   {% if params.X is defined and params.Y is undefined and params.Z is undefined %}
     M118 G28 X START
