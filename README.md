@@ -1,5 +1,5 @@
 # Система голосовых уведомлений Klipper  
-10 декабря 2025, от Йожик
+
 
 ## Вступление
 
@@ -424,12 +424,10 @@ rename_existing: BASE_BED_MESH_CALIBRATE
 gcode:
     {% if params.ADAPTIVE is defined %}
       M118 BED_MESH_ADAPTIVE START
-      G4 P1000
       BASE_BED_MESH_CALIBRATE ADAPTIVE=1
       M118 BED_MESH_ADAPTIVE END
     {% else %}
       M118 BED_MESH START
-      G4 P1000
       BASE_BED_MESH_CALIBRATE
       M118 BED_MESH END
     {% endif %}
