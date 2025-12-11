@@ -100,7 +100,7 @@ setup_service() {
         exit 1
     fi
 
-    SERVICE_NAME="klipper_voice_notify.service"
+    SERVICE_NAME="klipper_voice_manager.service"
     SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 
     echo "Создаю системный сервис: $SERVICE_PATH"
@@ -128,7 +128,7 @@ setup_service() {
     # Создание сервиса systemd
     sudo tee "$SERVICE_PATH" > /dev/null << EOF
 [Unit]
-Description=Klipper Voice Notification Service
+Description=Klipper Voice Manager Service
 
 
 [Service]
