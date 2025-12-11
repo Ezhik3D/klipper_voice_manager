@@ -643,6 +643,11 @@ python3 main.py
 git clone https://github.com/Ezhik3D/klipper_voice_manager.git
 ```
 
+Перейдите в папку:
+```bash
+cd klipper_voice_manager
+```
+
 Полная установка:
 
 ```bash
