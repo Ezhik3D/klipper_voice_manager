@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "Удаление Klipper Voice Notification Service..."
+echo "Удаление Klipper Voice Manager Service..."
 
-SERVICE_NAME="klipper_voice_notify.service"
+SERVICE_NAME="klipper_voice_manager.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 
 # 1. Однократный запрос пароля sudo в начале
