@@ -1,6 +1,10 @@
 # Система голосовых уведомлений Klipper  
 
-![Демонстрация работы](https://github.com/Ezhik3D/klipper_voice_manager/blob/main/demo.mp4?raw=true)
+
+
+https://github.com/user-attachments/assets/3a71bfa2-baea-4c68-b692-876002da0d67
+
+
 
 
 ## Вступление
