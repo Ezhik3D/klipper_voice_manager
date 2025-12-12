@@ -1,14 +1,6 @@
 # Система голосовых уведомлений Klipper  
 
-<video
-  src="https://raw.githubusercontent.com/Ezhik3D/klipper_voice_manager/main/demo.mp4"
-  controls
-  width="720"
-  height="720"
-  preload="none"
->
-  Ваш браузер не поддерживает видео. Попробуйте открыть страницу в Chrome или Firefox.
-</video>
+![Демонстрация работы](https://github.com/Ezhik3D/klipper_voice_manager/blob/main/demo.mp4?raw=true)
 
 
 ## Вступление
