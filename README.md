@@ -1,5 +1,11 @@
 # Система голосовых уведомлений Klipper  
 
+<video src="https://raw.githubusercontent.com/Ezhik3D/klipper_voice_manager/main/demo.mp4" 
+       controls
+       width="720"
+       height="720"
+       poster="">
+</video>
 
 ## Вступление
 
