@@ -94,7 +94,7 @@ progress:
     filament_usage: true  # Озвучивать расход филамента
   initial_estimate_source: "filename"  #Расчётное время печати из названия файла "filename" или расчёт клиппера "calculation"
   unit_style: "compact"  # Единицы расхода филамента режим меньше слов "compact" или режим "auto"
-  notification_intervals: 1  # Интервалы уведомлений: "auto", число 1, или список [1, 5, 10, 50, 90, 100]
+  notification_intervals: "auto"  # Интервалы уведомлений: "auto", число 1, или список [1, 5, 10, 50, 90, 100]
   filament_units: "мм"  # Единицы расхода филамента ("грамм" / "мм")
   filament_density: 1.24  # Плотность филамента г/см³ для режима filament_units: "грамм"
   filament_diameter: 1.75  # Диаметр филамента в мм для режима filament_units: "грамм"
