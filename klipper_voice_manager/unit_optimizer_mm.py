@@ -2,19 +2,9 @@ from typing import List, Tuple
 from number_words import number_to_words
 from plural_utils import plural_form
 
-
-def split_mm_components(X_mm: int) -> Tuple[int, int, int, int]:
-    km = X_mm // 1_000_000
-    rem = X_mm % 1_000_000
-    m = rem // 1_000
-    rem %= 1_000
-    cm = rem // 10
-    mm = rem % 10
-    return km, m, cm, mm
-
-
 def phrase_for_component(value: int, unit: str) -> List[str]:
-    if value <= 0:
+    """Преобразует компонент в фразу со словом и единицей."""
+    if value <= 0 or value > 999:
         return []
     words = number_to_words(value)
     if unit == "km":
@@ -30,74 +20,84 @@ def phrase_for_component(value: int, unit: str) -> List[str]:
     words.append(unit_name)
     return words
 
+def split_mm_components(X_mm: int) -> Tuple[int, int, int, int]:
+    """Разбивает миллиметры на компоненты: км, м, см, мм."""
+    km = X_mm // 1_000_000
+    rem_after_km = X_mm % 1_000_000
 
-def generate_phrases(X_mm: int) -> List[Tuple[List[str], int]]:
-    km, m, cm, mm = split_mm_components(X_mm)
+
+    m = rem_after_km // 1_000
+    rem_after_m = rem_after_km % 1_000
+
+    cm = rem_after_m // 10
+    mm = rem_after_m % 10
+
+    return km, m, cm, mm
+
+def generate_all_phrase_variants(X_mm: int) -> List[Tuple[List[str], int, str, int]]:
+    km_comp, m_comp, cm_comp, mm_comp = split_mm_components(X_mm)
     results = []
 
-    if 1 <= km <= 999 and 1 <= m <= 999:
-        phrase = phrase_for_component(km, "km") + phrase_for_component(m, "m")
-        results.append((phrase, len(phrase)))
+    # ВАРИАНТ 1: все раздельно (гарантированный минимум)
+    phrase = []
+    if km_comp > 0:
+        phrase += phrase_for_component(km_comp, "km")
+    if m_comp > 0:
+        phrase += phrase_for_component(m_comp, "m")
+    if cm_comp > 0:
+        phrase += phrase_for_component(cm_comp, "cm")
+    if mm_comp > 0:
+        phrase += phrase_for_component(mm_comp, "mm")
+    if phrase:
+        results.append((phrase, len(phrase), "full", 0))
 
-    if 1 <= m <= 999 and 1 <= cm <= 999:
-        phrase = phrase_for_component(m, "m") + phrase_for_component(cm, "cm")
-        results.append((phrase, len(phrase)))
+    # ВАРИАНТ 2: км + м + (см+мм в мм), если см+мм ≤ 999
+    if km_comp > 0 and m_comp > 0:
+        total_mm = cm_comp * 10 + mm_comp
+        if 0 < total_mm <= 999:
+            phrase = (
+                phrase_for_component(km_comp, "km") +
+                phrase_for_component(m_comp, "m") +
+                phrase_for_component(total_mm, "mm")
+            )
+            results.append((phrase, len(phrase), "km_m_mm", 0))
 
-    if 1 <= cm <= 999 and 1 <= mm <= 999:
-        phrase = phrase_for_component(cm, "cm") + phrase_for_component(mm, "mm")
-        results.append((phrase, len(phrase)))
 
-    for val, unit in [(km, "km"), (m, "m"), (cm, "cm"), (mm, "mm")]:
-        if 1 <= val <= 999:
-            phrase = phrase_for_component(val, unit)
-            results.append((phrase, len(phrase)))
+    # ВАРИАНТ 3: если нет м, но есть км + см+мм в мм
+    if km_comp > 0 and m_comp == 0:
+        total_mm = cm_comp * 10 + mm_comp
+        if 0 < total_mm <= 999:
+            phrase = (
+                phrase_for_component(km_comp, "km") +
+                phrase_for_component(total_mm, "mm")
+            )
+            results.append((phrase, len(phrase), "km_mm", 0))
+
 
     return results
 
-
-def select_best_phrase(phrases: List[Tuple[List[str], int]]) -> List[str]:
-    if not phrases:
-        return []
-    min_word_count = min(count for _, count in phrases)
-    candidates = [p for p in phrases if p[1] == min_word_count]
-
-    unit_priority = {"км": 0, "м": 1, "см": 2, "мм": 3}
-
-    def priority_score(phrase_tuple):
-        phrase, _ = phrase_tuple
-        for word in phrase:
-            for unit_name, priority in unit_priority.items():
-                if unit_name in word:
-                    return priority
-        return 999
-
-    candidates.sort(key=priority_score)
-    return candidates[0][0]
-
-
 def get_compact_filament_phrase_mm(X_mm: int) -> List[str]:
+    print(f"[MM_IN] {X_mm}")
+
+
     if X_mm <= 0:
+        print(f"[MM_OUT] []")
         return []
 
-    candidates = generate_phrases(X_mm)
 
+    candidates = generate_all_phrase_variants(X_mm)
     if not candidates:
-        km = X_mm // 1_000_000
-        if 1 <= km <= 999:
-            return phrase_for_component(km, "km")
-
-        m = X_mm // 1_000
-        if 1 <= m <= 999:
-            return phrase_for_component(m, "m")
-
-        cm = X_mm // 10
-        if 1 <= cm <= 999:
-            return phrase_for_component(cm, "cm")
-
-        if 1 <= X_mm <= 999:
-            return phrase_for_component(X_mm, "mm")
-
+        print(f"[MM_OUT] []")
         return []
 
-    best_phrase = select_best_phrase(candidates)
+    # Сортировка: 1) ошибка (0), 2) длина фразы (меньше слов), 3) приоритет "total_m" / "total_mm"
+    candidates.sort(key=lambda x: (x[3], x[1], x[2] not in ["total_m", "total_mm", "m+total_mm"]))
+
+
+    best_phrase = candidates[0][0]
+    best_text = " ".join(best_phrase)
+    error = candidates[0][3]
+    print(f"[MM_OUT] {best_text} (ошибка: {error}мм)")
+
+
     return best_phrase
