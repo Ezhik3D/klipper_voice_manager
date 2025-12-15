@@ -396,28 +396,28 @@ response:
 rename_existing: G28.1
 gcode:
     {% if params.X is defined and params.Y is undefined and params.Z is undefined %}
-        M118 G28 X START
+        RESPOND MSG="G28 X START"
         G28.1 X
-        M118 G28 X END
+        RESPOND MSG="G28 X END"
     {% elif params.X is undefined and params.Y is defined and params.Z is undefined %}
-        M118 G28 Y START
+        RESPOND MSG="G28 Y START"
         G28.1 Y
-        M118 G28 Y END
+        RESPOND MSG="G28 Y END"
     {% elif params.X is undefined and params.Y is undefined and params.Z is defined %}
-        M118 G28 Z START
+        RESPOND MSG="G28 Z START"
         G28.1 ZА
-        M118 G28 Z END
+        RESPOND MSG="G28 Z END"
     {% elif params.X is defined and params.Y is defined and params.Z is undefined %}
-        M118 G28 X START
+        RESPOND MSG="G28 X START"
         G28.1 X
-        M118 G28 X END
-        M118 G28 Y START
+        RESPOND MSG="G28 X END"
+        RESPOND MSG="G28 Y START"
         G28.1 Y
-        M118 G28 Y END
+        RESPOND MSG="G28 Y END"
     {% elif (params.X is defined and params.Y is defined and params.Z is defined) or (params.X is undefined and params.Y is undefined and params.Z is undefined)  %}
-        M118 G28 START
+        RESPOND MSG="G28 START"
         G28.1
-        M118 G28 END
+        RESPOND MSG="G28 END"
     {% endif %}
 
 ```
@@ -429,13 +429,13 @@ gcode:
 rename_existing: BASE_BED_MESH_CALIBRATE
 gcode:
     {% if params.ADAPTIVE is defined %}
-      M118 BED_MESH_ADAPTIVE START
+      RESPOND MSG="BED_MESH_ADAPTIVE START"
       BASE_BED_MESH_CALIBRATE ADAPTIVE=1
-      M118 BED_MESH_ADAPTIVE END
+      RESPOND MSG="BED_MESH_ADAPTIVE END"
     {% else %}
-      M118 BED_MESH START
+      RESPOND MSG="BED_MESH START"
       BASE_BED_MESH_CALIBRATE
-      M118 BED_MESH END
+      RESPOND MSG="BED_MESH END"
     {% endif %}
 ```
 
@@ -445,8 +445,6 @@ gcode:
 
 ```ini
 [respond]
-default_type: echo
-default_prefix:
 ```
 
 ---
